@@ -4,5 +4,5 @@ import asyncio
 
 
 @app.task
-def get_vacancies():
+def task_to_get_vacancies():
     asyncio.run(get_vacancies())
