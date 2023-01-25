@@ -9,13 +9,20 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+<<<<<<< HEAD
 
+=======
+import os
+>>>>>>> vacancies
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> vacancies
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -27,7 +34,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> vacancies
 # Application definition
 
 INSTALLED_APPS = [
@@ -37,9 +47,17 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+<<<<<<< HEAD
 
     'user',
     'api.v1',
+=======
+    "drf_yasg",
+    "rest_framework",
+    "user",
+    "models",
+    "api.v1",
+>>>>>>> vacancies
 ]
 
 MIDDLEWARE = [
@@ -54,7 +72,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "config.urls"
 
+<<<<<<< HEAD
 AUTH_USER_MODEL = 'user.User'
+=======
+AUTH_USER_MODEL = "user.User"
+>>>>>>> vacancies
 
 TEMPLATES = [
     {
@@ -74,18 +96,33 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> vacancies
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
     "default": {
+<<<<<<< HEAD
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 
 
+=======
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("POSTGRES_DATABASE"),
+        "USER": os.environ.get("POSTGRES_USER"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+        "HOST": os.environ.get("POSTGRES_HOST"),
+        "PORT": "5432",
+    }
+}
+
+>>>>>>> vacancies
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -104,7 +141,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> vacancies
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -116,7 +156,10 @@ USE_I18N = True
 
 USE_TZ = True
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> vacancies
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
@@ -126,3 +169,21 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+<<<<<<< HEAD
+=======
+
+
+# Redis
+REDIS_HOST = os.environ.get("REDIS_HOST")
+REDIS_PORT = os.environ.get("REDIS_PORT")
+
+# Celery
+
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_BROKER_URL = CELERY_RESULT_BACKEND = f"redis://{REDIS_HOST}:{REDIS_PORT}"
+CELERY_BROKER_TRANSPORT_OPTIONS = {"visibility_timeout": 3600}
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+>>>>>>> vacancies
