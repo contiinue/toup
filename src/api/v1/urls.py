@@ -1,5 +1,3 @@
-from django.urls import include
+from django.urls import path, include
 
-urlpatterns = [
-
-]
+urlpatterns = [path("", include("api.v1.vacancies.urls"))]

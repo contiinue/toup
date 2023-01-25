@@ -76,3 +76,4 @@ celerybeat.pid
 dmypy.json
 
 .idea
+set_end.sh

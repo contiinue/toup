@@ -1,3 +1,17 @@
 from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
 
-# Create your models here.
+
+class Vacancy(models.Model):
+    company_name = models.CharField(max_length=128)
+    name = models.CharField(max_length=127)
+    experience = models.CharField(max_length=63)
+    city = models.CharField(max_length=63, null=True)
+    alternate_url = models.CharField(max_length=63)
+    schedule = models.CharField(max_length=63)
+    contact_email = models.EmailField(null=True)
+    contacts_phones = PhoneNumberField(null=True)
+    is_request = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
