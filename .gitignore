@@ -76,3 +76,7 @@ celerybeat.pid
 dmypy.json
 
 .idea
+<<<<<<< HEAD
+=======
+set_end.sh
+>>>>>>> vacancies
