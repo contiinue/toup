@@ -9,7 +9,6 @@ from rest_framework.viewsets import ModelViewSet
 
 from user.models import User, AuthHH
 from .serializers import UserSerializer, AuthHHSerializer
-from django_celery_beat.models import PeriodicTask, IntervalSchedule
 
 
 class UserView(ModelViewSet):
@@ -32,12 +31,3 @@ class UserView(ModelViewSet):
         elif isinstance(model, AuthHH):
             self.request.user.auth_hh = model
             self.request.user.save()
-
-    @staticmethod
-    def create_task(user_id):
-        interval = IntervalSchedule.objects.create(period="hours", every=5)
-        PeriodicTask.objects.create(
-            task="api.v1.vacancies.tasks.task_to_get_vacancies",
-            interval=interval,
-            kwargs=json.dumps({"user_id": user_id}),
-        )

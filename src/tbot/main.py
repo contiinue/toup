@@ -79,6 +79,13 @@ async def callbacks_num_finish_fab(callback: types.CallbackQuery, callback_data:
     await callback.answer()
 
 
+async def send_info_message_negotiations(
+    count_valid_negotiations: int, telegram_id: int
+):
+    msg = f"Завершил Рассылку!. Успешных отправок: {count_valid_negotiations}."
+    await bot.send_message(telegram_id, msg)
+
+
 def main() -> None:
     dp.run_polling(bot)
 

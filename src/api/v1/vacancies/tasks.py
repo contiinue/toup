@@ -1,5 +1,5 @@
 from config.celery import app
-from . import get_vacancies
+from . import get_vacancies, vacancy_negotiations
 import asyncio
 
 
@@ -12,4 +12,6 @@ def task_to_get_vacancies(**kwargs):
 
 @app.task()
 def make_negotiations(user_id: int, id_notification: int):
-    asyncio.run(get_vacancies.send_negotiations(user_id, id_notification))
+    loop = asyncio.new_event_loop()
+    loop.create_task(vacancy_negotiations.send_negotiations(user_id, id_notification))
+    loop.run_forever()
