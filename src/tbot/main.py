@@ -6,10 +6,12 @@ from magic_filter import F
 from aiogram.filters.callback_data import CallbackData
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from api.v1.vacancies import tasks
+from aiogram.filters import Command
+from aiogram.types import Message
 
 dp = Dispatcher()
 
-bot = Bot(TELEGRAM_API_TOKEN, parse_mode="HTML")
+bot = Bot(TELEGRAM_API_TOKEN, parse_mode="MarkdownV2")
 logger = logging.getLogger(__name__)
 
 
@@ -84,6 +86,15 @@ async def send_info_message_negotiations(
 ):
     msg = f"Завершил Рассылку!. Успешных отправок: {count_valid_negotiations}."
     await bot.send_message(telegram_id, msg)
+
+
+@dp.message(Command(commands=["auth"]))
+async def auth(message: Message) -> None:
+    await message.reply(
+        f"Перейдите по ссылке что бы авторизоватся через сайт: \n"
+        f"[Ссылка для авторизации через сайт]"
+        f"(http://127.0.0.1:8000/api/v1/auth/user/auth_telegram?user={message.from_user.id})",
+    )
 
 
 def main() -> None:
