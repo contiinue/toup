@@ -138,3 +138,8 @@ CELERY_RESULT_SERIALIZER = "json"
 
 # Telegram bot
 TELEGRAM_API_TOKEN = os.getenv("TELEGRAM_API_TOKEN")
+
+# HH KEYS
+
+HH_CLIENT_ID = os.getenv("HH_CLIENT_ID")
+HH_SECRET_KEY = os.getenv("HH_SECRET_KEY")

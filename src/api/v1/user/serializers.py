@@ -15,9 +15,3 @@ class UserSerializer(serializers.ModelSerializer):
             "covering_letter",
             "telegram_id",
         )
-
-
-class AuthHHSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AuthHH
-        fields = ("access_token", "refresh_token")

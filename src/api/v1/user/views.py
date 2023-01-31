@@ -1,33 +1,36 @@
-import json
-
 from django.contrib.auth import login
-from drf_yasg.utils import swagger_auto_schema
-from rest_framework.status import HTTP_201_CREATED
+from django.shortcuts import redirect
 from rest_framework.views import Response
 from rest_framework.decorators import action
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ViewSet
 
-from user.models import User, AuthHH
-from .serializers import UserSerializer, AuthHHSerializer
+from user.models import User
+from .serializers import UserSerializer
+from config.settings import HH_CLIENT_ID
+from .utils import get_url_to_grant_access
+from .auth_hh import set_user_tokens, update_tokens
 
 
 class UserView(ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
-    @swagger_auto_schema(methods=["post"], request_body=AuthHHSerializer)
-    @action(methods=["post"], detail=False)
-    def connect_hh_tokens(self, request):
-        serializer = AuthHHSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        return Response(data=serializer.validated_data, status=HTTP_201_CREATED)
-
     def perform_create(self, serializer):
         model = serializer.save()
-        if isinstance(model, User):
-            login(self.request, model)
+        login(self.request, model)
 
-        elif isinstance(model, AuthHH):
-            self.request.user.auth_hh = model
-            self.request.user.save()
+
+class TokenView(ViewSet):
+    redirect_uri = f"http://127.0.0.1:8000/api/v1/auth/set_tokens/"
+
+    @action(methods=["get"], detail=False)
+    def update_auth_tokens(self, request):
+        update_tokens(request.user)
+
+    @action(methods=["get"], detail=False)
+    def set_tokens(self, request):
+        if request.GET.get("code", False):
+            set_user_tokens(request.user, request.GET.get("code"), self.redirect_uri)
+            return Response(data={"true": "t"})
+        url = get_url_to_grant_access(HH_CLIENT_ID, self.redirect_uri)
+        return redirect(url)
