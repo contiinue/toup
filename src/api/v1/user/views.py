@@ -3,9 +3,10 @@ from django.shortcuts import redirect
 from rest_framework.views import Response
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet, ViewSet
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from user.models import User
-from .serializers import UserSerializer
+from .serializers import UserSerializer, TokenSerializer
 from config.settings import HH_CLIENT_ID, LINK_TO_TELEGRAM_BOT
 from .utils import get_url_to_grant_access
 from .auth_hh import set_user_tokens, update_tokens
@@ -27,7 +28,7 @@ class UserView(ModelViewSet):
         login(self.request, model)
 
 
-class TokenView(ViewSet):
+class HHTokenView(ViewSet):
     redirect_uri = "http://127.0.0.1:8000/api/v1/auth/set_tokens/"  # todo fix
 
     @action(methods=["get"], detail=False)
@@ -41,3 +42,7 @@ class TokenView(ViewSet):
             return Response(data={"true": "t"})
         url = get_url_to_grant_access(HH_CLIENT_ID, self.redirect_uri)
         return redirect(url)
+
+
+class TokenView(TokenObtainPairView):
+    serializer_class = TokenSerializer

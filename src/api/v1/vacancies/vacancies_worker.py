@@ -1,12 +1,16 @@
 import json
 
+from django.core.exceptions import ObjectDoesNotExist
 from django_celery_beat.models import IntervalSchedule, PeriodicTask
 from rest_framework.views import Response
 from rest_framework.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
 
 def _stop_worker(user_id) -> Response:
-    PeriodicTask.objects.get(name=f"Task for: User{user_id}").delete()
+    try:
+        PeriodicTask.objects.get(name=f"Task for: User{user_id}").delete()
+    except ObjectDoesNotExist:
+        return Response(data={}, status=HTTP_204_NO_CONTENT)
     return Response(data={}, status=HTTP_204_NO_CONTENT)
 
 
@@ -14,7 +18,7 @@ def _start_worker(user_id: int, interval: int) -> Response:
     schedule, created = IntervalSchedule.objects.get_or_create(
         period=IntervalSchedule.HOURS, every=interval
     )
-    PeriodicTask.objects.create(
+    PeriodicTask.objects.get_or_create(
         name=f"Task for: User{user_id}",
         task="api.v1.vacancies.tasks.task_to_get_vacancies",
         interval=schedule,

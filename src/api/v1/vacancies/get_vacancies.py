@@ -12,6 +12,8 @@ from models.models import Vacancy, Notification
 from tbot import main
 from user.models import User
 
+from django.db.utils import IntegrityError
+
 __all__ = ("vacancies",)
 
 
@@ -107,7 +109,10 @@ async def _save_vacancies(
     response_vacancies: list[ResponseVacancy], user: User
 ) -> None:
     for vacancy in response_vacancies:
-        _vacancy = await Vacancy.objects.aget_or_create(**vacancy.__dict__)
+        try:
+            _vacancy = await Vacancy.objects.aget_or_create(**vacancy.__dict__)
+        except IntegrityError:
+            return
         await sync_to_async(_vacancy[0].user.add)(user)
 
 

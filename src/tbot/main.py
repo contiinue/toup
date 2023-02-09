@@ -11,7 +11,7 @@ from aiogram.types import Message
 
 dp = Dispatcher()
 
-bot = Bot(TELEGRAM_API_TOKEN, parse_mode="MarkdownV2")
+bot = Bot(TELEGRAM_API_TOKEN, parse_mode="HTML")
 logger = logging.getLogger(__name__)
 
 
@@ -23,7 +23,7 @@ class WhoDo(CallbackData, prefix="make"):
 
 
 def _get_link_to_notification(notification_id: int) -> str:
-    return f"http://127.0.0.1:8000/{notification_id}"
+    return f"http://127.0.0.1:3000/notification/{notification_id}"
 
 
 def get_keyboard(link_to_vacancies: str, notification_id: int, user_id: int):
@@ -92,8 +92,8 @@ async def send_info_message_negotiations(
 async def auth(message: Message) -> None:
     await message.reply(
         f"Перейдите по ссылке что бы авторизоватся через сайт: \n"
-        f"[Ссылка для авторизации через сайт]"
-        f"(http://127.0.0.1:8000/api/v1/auth/user/auth_telegram?user={message.from_user.id})",
+        f"<a href='http://127.0.0.1:8000/api/v1/auth/user/auth_telegram?user={message.from_user.id}'"
+        f">Ссылка для авторизации через сайт</a>",
     )
 
 

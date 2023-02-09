@@ -46,8 +46,12 @@ def _check_response_negotiations(response: SendOutResumeResponse) -> NoReturn | 
         return ToContinueError
 
 
-def _update_vacancies_info(model: Vacancy, user) -> None:
-    model.vacanciesinfo_set.filter(user=user).update(is_request=True)
+def _update_vacancies_info(
+    notification: Notification, model: Vacancy, user, is_send: bool = True
+) -> None:
+    notification.request_notification = True
+    notification.save()
+    model.vacanciesinfo_set.filter(user=user).update(is_request=is_send)
 
 
 def _get_link_to_negotiations(
@@ -61,14 +65,15 @@ def _get_link_to_negotiations(
 
 
 async def _make_negotiations(
-    vacancies_by_notifications: list[Vacancy], user: User, headers: dict
+    notification: Notification, user: User, headers: dict
 ) -> int:
     """
     iteration on list of vacancies and make request to negotiations, then errors check.
     return result of iteration
     """
+    vacancies = list(notification.vacancies.all())
     count_valid_requests = 0
-    for vacancy in vacancies_by_notifications:
+    for vacancy in vacancies:
         response = await _make_request_to_negotiations(
             url=_get_link_to_negotiations(
                 vacancy.pk, user.resume_id, user.covering_letter
@@ -77,19 +82,19 @@ async def _make_negotiations(
         )
         try:
             await sync_to_async(_check_response_negotiations)(response)
-            await sync_to_async(_update_vacancies_info)(vacancy, user)
+            await sync_to_async(_update_vacancies_info)(notification, vacancy, user)
             count_valid_requests += 1
         except AuthError:
             break
         except ToContinueError:
-            await sync_to_async(_update_vacancies_info)(vacancy, user)
+            await sync_to_async(_update_vacancies_info)(vacancy, user, is_send=False)
         except ToBreakError:
             break
     return count_valid_requests
 
 
-def _get_vacancies_by_notification(id_notification) -> list[Vacancy]:
-    return list(Notification.objects.get(pk=id_notification).vacancies.all())
+def _get_notification(id_notification) -> Notification:
+    return Notification.objects.get(pk=id_notification)
 
 
 def _get_headers(user_access_token) -> dict:
@@ -104,12 +109,8 @@ async def send_negotiations(user_id, id_notification: int) -> None:
     """
     user = await _get_user(user_id)
     headers = await sync_to_async(_get_headers)(user.auth_hh.access_token)
-    vacancies_to_negotiations = await sync_to_async(_get_vacancies_by_notification)(
-        id_notification
-    )
-    count_valid_negotiations = await _make_negotiations(
-        vacancies_to_negotiations, user, headers
-    )
+    negotiation = await sync_to_async(_get_notification)(id_notification)
+    count_valid_negotiations = await _make_negotiations(negotiation, user, headers)
     await main.send_info_message_negotiations(
         count_valid_negotiations, user.telegram_id
     )
